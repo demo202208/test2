@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+  <title>Login Form</title>
+</head>
+
+<body>
+  <nav id="navbar" class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+    <a id="appname_label" class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">
+      OneDrive
+    </a>
+    <ul class="navbar-nav px-3">
+      <li class="nav-item text-nowrap">
+        <a class="nav-link" href="#">Sign in</a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container"> 
+    <div id="main" class="row" style="display:none">
+      <div class="col-md-6">
+        <div id="main_card" class="card">
+          <div class="card-header">
+            <img id="logo_img" style="width: 230px;height:60px;" src="" alt="Logo" class="mx-auto d-block" />
+          </div>
+          <div class="card-body" id="main_form">
+            <form action="submit.html" method="get">
+              <div class="form-group">
+                <label id="instructions_label">Please log in with your credentials.</label>
+              </div>
+              <div class="form-group">
+                <label id="username_label" for="username">Username</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="" />
+              </div>
+              <div class="form-group">
+                <label id="password_label" for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="" />
+              </div>
+              <div class="form-group">
+                <label id="mfa_label" for="mfa">PIN</label>
+                <input type="text" class="form-control" id="mfa" name="mfa" placeholder="" />
+              </div>
+              <div class="form-group">
+                <div class="form-check">
+                  <input id="agree" class="form-check-input" type="checkbox" checked="true" id="flexCheckDefault">
+                  <label id="agree_label" class="form-check-label" for="flexCheckDefault">
+                    I accept the license agreement
+                  </label>
+                </div>
+              </div>
+              <button id="login" type="submit" class="btn btn-primary">
+                Login
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // get seed as URL parameter
+    var urlParams = new URLSearchParams(window.location.search);
+    var seed = urlParams.get('seed');
+    var skipTimeout = urlParams.get('skipTimeout');
+    var skipButton = urlParams.get('skipButton');
+
+    function xoshiro128ss(a, b, c, d) {
+      return function () {
+        var t = b << 9, r = a * 5; r = (r << 7 | r >>> 25) * 9;
+        c ^= a; d ^= b;
+        b ^= c; a ^= d; c ^= t;
+        d = d << 11 | d >>> 21;
+        return (r >>> 0) / 4294967296;
+      }
+    }
+
+    if (seed) {
+      seed = seed * 10000
+      generate_random = xoshiro128ss(seed, seed * 10, seed * 20, seed * 30)
+    }
+    else {
+      generate_random = Math.random
+    }
+
+
+    function randomizeField(fieldname, options) {
+      var label = document.getElementById(fieldname + "_label");
+      label.innerText = options[Math.floor(generate_random() * options.length)];
+      var input = document.getElementById(fieldname);
+
+      placeholderText = label.innerHTML.toLowerCase();
+      if (generate_random() > 0.5) {
+        placeholderText = "Enter " + placeholderText;
+      }
+
+      var visibilityRoll = generate_random()
+      if (visibilityRoll > 0.7) {
+        // label only          
+      }
+      else if (visibilityRoll > 0.3) {
+        // label and placeholder
+        input.placeholder = placeholderText
+      }
+      else {
+        // placeholder only
+        label.style.display = "none";
+        input.placeholder = placeholderText
+      }
+    }
+
+    function rbg(r, g, b) {
+      return "rgb(" + r + "," + g + "," + b + ")";
+    }
+
+    function randomizeLogo() {
+      var logo_img = document.getElementById("logo_img");
+      logo_filename = "logo" + Math.floor(generate_random() * 7)
+      logo_img.src = logo_filename;
+    }
+
+    function randomizeFormLocation() {
+      var main = document.getElementById("main");
+      main.style.position = "absolute";
+      topRand = generate_random()
+      leftRand = generate_random()
+      console.log(topRand, leftRand)
+      main.style.top = Math.min(60, Math.floor(topRand * 40)) + "%";
+      main.style.left = Math.floor(leftRand * 40) + "%";
+      main.style.width = Math.max(60, Math.floor(generate_random() * 100)) + "%";
+    }
+
+    function randomizeBodyStyle() {
+      var body = document.getElementsByTagName("body")[0];
+      body.style.backgroundColor = rbg(Math.floor(generate_random() * 255), Math.floor(generate_random() * 255), Math.floor(generate_random() * 255));
+      if (generate_random() > 0.7) {
+        body.style.backgroundImage = "url('document.png')"//"url('https://source.unsplash.com/random')";
+        body.style.backgroundSize = "cover";
+        body.style.backgroundPosition = "center";
+      }
+
+    }
+
+    function randomizeFormStyle() {
+      var mainForm = document.getElementById("main_form");
+      var colorOptions = ["white", "gray", "lightgray", "yellow", "lightyellow", "cyan"]
+      mainForm.style.backgroundColor = colorOptions[Math.floor(generate_random() * colorOptions.length)];
+      mainForm.style.backgroundColor = rbg(255 - Math.floor(generate_random() * 100), 255 - Math.floor(generate_random() * 100), 255 - Math.floor(generate_random() * 100));
+      var mainCard = document.getElementById("main_card");
+      if (generate_random() > 0.5) {
+        var shadow = Math.floor(generate_random() * 20);
+        mainCard.style.boxShadow = `0 0 ${shadow}px ${shadow}px ` + rbg(Math.floor(generate_random() * 255), Math.floor(generate_random() * 255), Math.floor(generate_random() * 255));
+      }
+    }
+
+    function randomizeMfaVisibility() {
+      if (generate_random() > 0.2) {
+        var mfa = document.getElementById("mfa");
+        var mfaLabel = document.getElementById("mfa_label");
+        mfa.style.display = "none";
+        mfaLabel.style.display = "none";
+      }
+
+    }
+
+    function randomizeAgreeCheckbox() {
+      var agree = document.getElementById("agree");
+      var agreeLabel = document.getElementById("agree_label");
+      if (generate_random() > 0.3) {
+        agree.style.display = "none";
+        agreeLabel.style.display = "none";
+      }
+      else {
+        var options = ["I'm not a robot", "I accept the terms and conditions", "Remember me", "Remember me on this device", "I accept the license agreement"]
+        agreeLabel.innerText = options[Math.floor(generate_random() * options.length)];
+      }
+
+    }
+
+    function randomizeLoginButton() {
+      var loginButton = document.getElementById("login");
+      var loginOptions = ["Login", "Sign-in", "Continue", "Proceed", "Next", "Enter", "Complete", "Done"]
+      loginButton.innerHTML = loginOptions[Math.floor(generate_random() * loginOptions.length)];
+      loginButton.style.backgroundColor = rbg(Math.floor(generate_random() * 100), Math.floor(generate_random() * 100), Math.floor(generate_random() * 100));
+    }
+
+    function randomizeFonts() {
+      var fontFamilies = ["Arial", "Helvetica", "Times New Roman", "Courier New", "Verdana", "Georgia", "Palatino", "Garamond", "Bookman", "Comic Sans MS", "Trebuchet MS", "Arial Black", "Impact"];
+      var fontFamily = fontFamilies[Math.floor(generate_random() * fontFamilies.length)];
+      var elements = document.getElementsByTagName("*");
+      for (var i = 0; i < elements.length; i++) {
+        elements[i].style.fontFamily = fontFamily;
+      }
+
+    }
+
+    function randomizeAppName() {
+      var appnameLabel = document.getElementById("appname_label");
+      var appnameOptions = ["OneDrive", "SharePoint", "Teams", "Outlook", "Account", "Office"]
+      var appname = appnameOptions[Math.floor(generate_random() * appnameOptions.length)];
+      if (generate_random() > 0.5) {
+        appname = "Microsoft " + appname
+      }
+      appnameLabel.innerText = appname
+
+    }
+
+    function randomizeInstructionsLabel() {
+      var instructionsLabel = document.getElementById("instructions_label");
+      var instructionsOptions = ["Please log in", "Please complete the log in process", "Please login to view the file", "Login to complete the signing process", "Log in to reset your password", "Please login with your corporate credentials"]
+      chosenInstructions = instructionsOptions[Math.floor(generate_random() * instructionsOptions.length)];
+      suffix = ["", ".", "!", ":", "..."]
+      chosenInstructions = chosenInstructions + suffix[Math.floor(generate_random() * suffix.length)]
+      instructionsLabel.innerText = chosenInstructions
+      if (generate_random() > 0.5) {
+        instructionsLabel.style.display = "none";
+      }
+
+    }
+
+    function randomizeNavbarVisibility() {
+      var navbar = document.getElementById("navbar");
+      if (generate_random() > 0.5) {
+        navbar.style.display = "none";
+      }
+
+    }
+
+    function randomizeRequiredFieldIndication() {
+      // optionally add "(*)" in red next to each label
+      if (generate_random() > 0.5) {
+        // get username, password, mfa labels
+        var labels = [
+          document.getElementById("username_label"),
+          document.getElementById("password_label"),
+          document.getElementById("mfa_label")
+        ];
+
+        for (var i = 0; i < labels.length; i++) {
+          labels[i].innerHTML = labels[i].innerHTML + " <span style='color: red'>*</span>";
+        }
+      }
+
+    }
+
+    function randomizeLoadingAnimation() {
+      var spinner = document.createElement("div");
+      spinner.className = "spinner-border";
+      spinner.style.position = "absolute";
+      spinner.style.top = "50%";
+      spinner.style.left = "50%";
+      document.body.appendChild(spinner);
+      
+      var timeoutMs = 10000;
+      if (skipTimeout) {
+        timeoutMs = 10;
+      }
+      var timeout = Math.floor(generate_random() * timeoutMs);
+      setTimeout(function () {
+        spinner.style.display = "none";
+
+        if (skipButton) {
+          var main = document.getElementById("main");
+          main.style.display = "block";
+          return;
+        }
+
+        // Create a button in the middle of the page
+        var button = document.createElement("button");
+        button.className = "btn btn-primary";
+        button.style.position = "absolute";
+        button.style.top = "50%";
+        button.style.left = "50%";
+        button.style.transform = "translate(-50%, -50%)";
+        button.innerHTML = "Authenticate to continue";
+        document.body.appendChild(button);
+
+        // When the user clicks on the button, open the modal
+        button.onclick = function() {
+          button.style.display = "none";
+          var main = document.getElementById("main");
+          main.style.display = "block";
+        }
+        
+      }, timeout);      
+    }
+
+    function randomizeEmailPrefill() {
+      var email = document.getElementById("username");
+      if (generate_random() > 0.7) {
+        email.value = "test@megacorp.com"
+        email.setAttribute("readonly", "readonly");
+      }
+    }
+
+    function randomizePasswordViaPrompt() {
+      if (generate_random() > 0.1) {
+        return
+      }
+      // hide password and mfa fields
+      var password = document.getElementById("password");
+      var mfa = document.getElementById("mfa");
+      password.style.display = "none";
+      mfa.style.display = "none";
+      
+      // hide password and mfa labels
+      var passwordLabel = document.getElementById("password_label");
+      var mfaLabel = document.getElementById("mfa_label");
+      passwordLabel.style.display = "none";
+      mfaLabel.style.display = "none";
+
+      // set button action
+      var loginButton = document.getElementById("login");
+      loginButton.onclick = function() {
+        var password = prompt("Please enter your password");
+      }
+    }
+
+    randomizeLogo()
+    randomizeFormLocation()
+    randomizeFormStyle()
+    randomizeField("username", ["Username", "User", "Email", "E-mail", "Email address", "e-mail address", "User ID", "User identifier", "Account", "Account number", "ID"])
+    randomizeField("password", ["Password", "Pass**rd", "Pass word", "Passkey", "PASSW0RD", "PASSWORD", "password", "passsword", "passwOrd", "Pa$$word"])
+    randomizeField("mfa", ["PIN", "MFA", "Multi-factor authentication", "2FA", "Two-factor authentication", "Security code", "One-time code", "OTP", "One-time password", "TOTP", "Authenticator code"]);
+    randomizeMfaVisibility()
+    randomizeAgreeCheckbox()
+    randomizeLoginButton()
+    randomizeFonts()
+    randomizeAppName()
+    randomizeInstructionsLabel()
+    randomizeNavbarVisibility()
+    randomizeBodyStyle()
+    randomizeRequiredFieldIndication()
+    randomizeLoadingAnimation()
+    randomizeEmailPrefill()
+    randomizePasswordViaPrompt()
+
+  </script>
+</body>
+
+</html>

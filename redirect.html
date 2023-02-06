@@ -1,0 +1,25 @@
+<html>
+    <body>
+        <h4>Redirecting you, please hold on... <span id="remaining"></span> left</h4>
+        <script>
+            // get url parameter
+            var urlParams = new URLSearchParams(window.location.search);
+            var redirectsLeft = urlParams.get('redirects');
+            // get remaining span
+            var remainingSpan = document.getElementById("remaining")
+            remainingSpan.innerHTML = redirectsLeft
+            var targetUrl
+            if (redirectsLeft == 0) {
+                targetUrl = "ms.html"
+            }
+            else {
+                targetUrl = "redirect.html?redirects=" + (redirectsLeft - 1)
+            }
+            setTimeout(() => {
+                window.location.href = targetUrl
+            }, 3000)
+            
+        </script>
+
+    </body>
+</html>

